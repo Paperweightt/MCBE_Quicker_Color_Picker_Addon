@@ -2,8 +2,8 @@ import { BlockVolume, Dimension, Player, RGB } from "@minecraft/server";
 import { blockData } from "../generated/blockColors.js";
 import { Vector } from "./vector.js";
 
-type lab = { l: number; a: number; b: number };
-type locationColor = { location: Vector; color: lab };
+export type lab = { l: number; a: number; b: number };
+export type locationColor = { location: Vector; color: lab };
 
 class Blocks {
     static getLab(typeId: string): lab | -1 {

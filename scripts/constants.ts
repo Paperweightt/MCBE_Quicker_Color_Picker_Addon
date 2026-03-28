@@ -2,22 +2,22 @@ export const PACK_ID = "qbp";
 
 export const items = {
     colorWheel: {
-        typeId: "qbp" + ":palette",
+        typeId: PACK_ID + ":palette",
         useDuration: 2_000_000_000,
     },
 };
 
 export const entities = {
-    colorWheel: "qbp" + ":color_picker",
+    colorWheel: PACK_ID + ":color_picker",
 };
 
 export const particles = {
     block: {
-        x: "qbp" + "",
-        y: "qbp" + "",
-        z: "qbp" + "",
+        x: PACK_ID + ":face_x",
+        y: PACK_ID + ":face_y",
+        z: PACK_ID + ":face_z",
     },
-    line: "qbp" + "",
+    line: PACK_ID + ":line",
 };
 
 export const config = {

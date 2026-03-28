@@ -14,14 +14,32 @@ type rotation2 = {
 type formats = "xyz" | "xzy" | "yxz" | "yzx" | "zxy" | "zyx";
 
 export class Vector {
-    x = 0;
-    y = 0;
-    z = 0;
+    x: number;
+    y: number;
+    z: number;
 
-    constructor(x: number, y: number, z: number) {
-        this.x = x;
-        this.y = y;
-        this.z = z;
+    constructor(
+        x: number | Vector3 | number[] = 0,
+        y: number | undefined = undefined,
+        z: number | undefined = undefined
+    ) {
+        if (Array.isArray(x)) {
+            this.x = x[0];
+            this.y = x[1];
+            this.z = x[2];
+        } else if (typeof x === "object" && "x" in x) {
+            this.x = x.x;
+            this.y = x.y;
+            this.z = x.z;
+        } else if (y === undefined) {
+            this.x = x;
+            this.y = x;
+            this.z = x;
+        } else {
+            this.x = x;
+            this.y = y;
+            this.z = z!;
+        }
     }
 
     static stringToVector(string: Direction): Vector {

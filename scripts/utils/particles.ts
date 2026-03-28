@@ -16,15 +16,15 @@ export class Particle {
         dimension: Dimension,
         lifetime: number = 0.11,
         width: number = 0.05,
-        rgb: RGBA = Particle.defaultRGBA,
-        rotation = { y: 0, p: 0, r: 0 },
-        pivot: Vector = new Vector(0, 0, 0)
+        rgb: RGBA = Particle.defaultRGBA
+        // rotation = { y: 0, p: 0, r: 0 },
+        // pivot: Vector = new Vector(0, 0, 0)
     ): void {
-        if (rotation.y !== 0 || rotation.p !== 0 || rotation.r !== 0) {
-            const iPivot = Vector.add(pivot, 0.5);
-            start = Vector.rotate(start.subtract(iPivot), rotation).add(iPivot);
-            end = Vector.rotate(end.subtract(iPivot), rotation).add(iPivot);
-        }
+        // if (rotation.y !== 0 || rotation.p !== 0 || rotation.r !== 0) {
+        //     const iPivot = Vector.add(pivot, 0.5);
+        //     start = Vector.rotate(start.subtract(iPivot), rotation).add(iPivot);
+        //     end = Vector.rotate(end.subtract(iPivot), rotation).add(iPivot);
+        // }
 
         const diff = Vector.subtract(start, end);
         const middle = Vector.divide(diff, 2).add(end);
@@ -59,7 +59,8 @@ export class Particle {
             start.add(location);
             offset.add(start);
             // try {
-            this.line(particle, start, offset, dimension, lifetime, width, rgba, rotation, pivot);
+            // this.line(particle, start, offset, dimension, lifetime, width, rgba, rotation, pivot);
+            this.line(particle, start, offset, dimension, lifetime, width, rgba);
             // } catch (error) {}
         };
 

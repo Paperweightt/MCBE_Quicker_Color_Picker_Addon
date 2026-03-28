@@ -1,9 +1,19 @@
-import { Block, BlockPermutation, Dimension, Direction, Player, system, Vector3 } from "@minecraft/server";
+import {
+    Block,
+    BlockVolume,
+    BlockPermutation,
+    Dimension,
+    Direction,
+    Player,
+    system,
+    Vector3,
+} from "@minecraft/server";
 import { config, particles } from "../../constants";
 import { Vector } from "../../utils/vector.js";
 import { Particle } from "../../utils/particles.js";
 import { Events } from "./events.js";
 import { PlayerUtils } from "../../utils/player";
+import { Color, locationColor } from "../../utils/color";
 
 Events.startUse.subscribe({
     priority: (data) => {
@@ -27,11 +37,37 @@ Events.startUse.subscribe({
 
 Events.releaseUse.subscribe((data) => {
     const { player } = data;
-    const creator = SelectionCreator.get(player.id);
+    const selection = SelectionCreator.get(player.id);
 
-    if (!creator) return;
+    if (!selection) return;
 
-    creator.apply();
+    const { minLocation, maxLocation } = selection.getStartEnd();
+
+    const locations = new BlockVolume(minLocation, maxLocation).getBlockLocationIterator();
+    const inputs: locationColor[] = [];
+
+    for (const location of locations) {
+        const block = selection.dimension.getBlock(location);
+        if (!block) continue;
+        if (block.isAir) continue;
+
+        const color = Color.blocks.getLab(block.typeId);
+
+        if (color === -1) continue;
+
+        const { x, y, z } = location;
+
+        inputs.push({ location: new Vector(x, y, z), color });
+    }
+
+    Color.blocks.cubePalette(
+        new Vector(minLocation),
+        new Vector(maxLocation).subtract(1),
+        selection.dimension,
+        inputs
+    );
+
+    selection.remove();
 });
 
 class SelectionCreator {
@@ -115,16 +151,15 @@ class SelectionCreator {
         const { minLocation, maxLocation } = this.getStartEnd();
         const size = Vector.subtract(maxLocation, minLocation);
 
-        if (system.currentTick % 4 === 0) {
-            Particle.boxFaces(particles.block, minLocation, size, this.dimension);
-        }
+        // if (system.currentTick % 4 === 0) {
+        //     Particle.boxFaces(particles.block, minLocation, size, this.dimension);
+        // }
+        // console.log(JSON.stringify(minLocation), size.getString());
 
         Particle.boxEdges(particles.line, minLocation, size, this.dimension, 0.1);
 
         this.player.onScreenDisplay.setActionBar("§l" + size.getString());
     }
-
-    apply() {}
 
     getPointer(): Vector | undefined {
         const inverseRotation = {
@@ -132,7 +167,10 @@ class SelectionCreator {
             p: (-this.rotation.x * Math.PI) / 180,
             r: 0,
         };
-        const relPlayerLocation = Vector.subtract(PlayerUtils.getEyeLocation(this.player), this.editLocation);
+        const relPlayerLocation = Vector.subtract(
+            PlayerUtils.getEyeLocation(this.player),
+            this.editLocation
+        );
         const nPlayerLocation = Vector.rotate(relPlayerLocation, inverseRotation);
         const nViewDirection = Vector.rotate(this.player.getViewDirection(), inverseRotation);
 
@@ -176,8 +214,14 @@ class SelectionCreator {
 
         pointer.y = Math.min(Math.max(pointer.y, min), max);
 
-        pointer = Vector.min(new Vector(distance, distance, distance).add(this.player.location), pointer);
-        pointer = Vector.max(new Vector(-distance, -distance, -distance).add(this.player.location), pointer);
+        pointer = Vector.min(
+            new Vector(distance, distance, distance).add(this.player.location),
+            pointer
+        );
+        pointer = Vector.max(
+            new Vector(-distance, -distance, -distance).add(this.player.location),
+            pointer
+        );
 
         this._minLocation = Vector.min(location, pointer).floor();
         this._maxLocation = Vector.max(location, pointer).ceil();
