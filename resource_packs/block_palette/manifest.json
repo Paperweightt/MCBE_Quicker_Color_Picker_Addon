@@ -1,0 +1,25 @@
+{
+  "format_version": 2,
+  "header": {
+    "name": "Quicker Block Picker",
+    "description": "Create block palettes faster than ever!",
+    "uuid": "28d16fb0-3def-4c48-87ec-1bba48460cb6",
+    "version": [1, 0, 0],
+    "min_engine_version": [1, 20, 30]
+  },
+  "modules": [
+    {
+      "description": "My Resource Pack",
+      "type": "resources",
+      "uuid": "503fe660-142b-46a2-8fec-34a54e944720",
+      "version": [1, 0, 0]
+    }
+  ],
+  "dependencies": [
+    {
+      "uuid": "0fbcabb8-0149-493b-a735-c36fa9aa990f",
+      "version": [1, 0, 0]
+    }
+  ]
+}
+

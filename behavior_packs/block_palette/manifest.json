@@ -1,0 +1,30 @@
+{
+  "format_version": 2,
+  "header": {
+    "name": "Quicker Block Picker",
+    "description": "Create block palettes faster than ever!",
+    "version": [1, 0, 0],
+    "uuid": "0fbcabb8-0149-493b-a735-c36fa9aa990f",
+    "min_engine_version": [1, 20, 30]
+  },
+  "modules": [
+    {
+      "description": "Script resources",
+      "language": "javascript",
+      "type": "script",
+      "uuid": "f9b11944-b8a3-41eb-81de-6eda952eed83",
+      "version": [1, 0, 0],
+      "entry": "scripts/main.js"
+    }
+  ],
+  "dependencies": [
+    {
+      "module_name": "@minecraft/server",
+      "version": "2.6.0"
+    },
+    {
+      "uuid": "28d16fb0-3def-4c48-87ec-1bba48460cb6",
+      "version": [1, 0, 0]
+    }
+  ]
+}

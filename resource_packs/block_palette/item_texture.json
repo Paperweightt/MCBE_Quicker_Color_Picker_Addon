@@ -1,0 +1,9 @@
+{
+  "texture_name": "atlas.items",
+  "resource_pack_name": "qbp",
+  "texture_data": {
+    "qbp:palette": {
+      "textures": "textures/items/palette"
+    }
+  }
+}
