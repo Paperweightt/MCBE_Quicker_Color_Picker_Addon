@@ -1,21 +1,20 @@
 {
-  "format_version": "1.26.0",
-  "minecraft:item": {
-    "description": {
-      "identifier": "qbp:palette",
-      "is_experimental": false
-    },
-    "components": {
-      "minecraft:can_destroy_in_creative": false,
-      "minecraft:max_stack_size": 1,
-      "minecraft:icon": "qbp:palette",
-      "minecraft:food": {
-        "can_always_eat": true
-      },
-      "minecraft:use_modifiers": {
-        "use_duration": 100000000,
-        "emit_vibrations": false
-      }
+    "format_version": "1.26.0",
+    "minecraft:item": {
+        "description": {
+            "identifier": "qbp:palette"
+        },
+        "components": {
+            "minecraft:can_destroy_in_creative": false,
+            "minecraft:max_stack_size": 1,
+            "minecraft:icon": "qbp:palette",
+            "minecraft:food": {
+                "can_always_eat": true
+            },
+            "minecraft:use_modifiers": {
+                "use_duration": 100000000,
+                "emit_vibrations": false
+            }
+        }
     }
-  }
 }

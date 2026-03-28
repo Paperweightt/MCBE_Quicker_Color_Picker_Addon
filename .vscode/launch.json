@@ -1,16 +1,16 @@
 {
-  "version": "0.2.0",
-  "configurations": [
-    {
-      "type": "minecraft-js",
-      "request": "attach",
-      "name": "Debug with Minecraft",
-      "mode": "listen",
-      "preLaunchTask": "build",
-      "sourceMapRoot": "${workspaceFolder}/dist/debug/",
-      "generatedSourceRoot": "${workspaceFolder}/dist/scripts/",
-      "targetModuleUuid": "0fbcabb8-0149-493b-a735-c36fa9aa990f",
-      "port": 19144
-    }
-  ]
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "type": "minecraft-js",
+            "request": "attach",
+            "name": "Debug with Minecraft",
+            "mode": "listen",
+            "preLaunchTask": "build",
+            "sourceMapRoot": "${workspaceFolder}/dist/debug/",
+            "generatedSourceRoot": "${workspaceFolder}/dist/scripts/",
+            "targetModuleUuid": "f9b11944-b8a3-41eb-81de-6eda952eed83",
+            "port": 19144
+        }
+    ]
 }

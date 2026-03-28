@@ -107,7 +107,7 @@ class Blocks {
 
     static getClosestBlockType(inputLab: lab): string {
         let lowestDistance = Infinity;
-        let output;
+        let output = "bedrock";
 
         for (const { name, lab } of blockData) {
             const distance = (lab[0] - inputLab.l) ** 2 + (lab[1] - inputLab.a) ** 2 + (lab[2] - inputLab.b) ** 2;

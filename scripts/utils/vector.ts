@@ -1,5 +1,6 @@
 import { Direction, Vector3 } from "@minecraft/server";
 
+type VectorOperand = number | mVector;
 type mVector = Vector | Vector3;
 type rotation = {
     y: number;
@@ -72,7 +73,7 @@ export class Vector {
         return new Vector(a.y * b.z - a.z * b.y, a.z * b.x - a.x * b.z, a.x * b.y - a.y * b.x);
     }
 
-    static dotProduct(a: mVector, b: mVector): Vector {
+    static dotProduct(a: mVector, b: mVector): number {
         return a.x * b.x + a.y * b.y + a.z * b.z;
     }
 
@@ -121,22 +122,25 @@ export class Vector {
         return sum.divide(vectors.length);
     }
 
-    static divide(a: mVector, b: mVector): Vector {
-        if (typeof b === "number") return new Vector(a.x / b, a.y / b, a.z / b);
+    static divide(a: mVector, b: VectorOperand): Vector {
+        if (typeof b === "number") {
+            return new Vector(a.x / b, a.y / b, a.z / b);
+        }
+
         return new Vector(a.x / b.x, a.y / b.y, a.z / b.z);
     }
 
-    static add(a: mVector, b: mVector): Vector {
+    static add(a: mVector, b: VectorOperand): Vector {
         if (typeof b === "number") return new Vector(a.x + b, a.y + b, a.z + b);
         return new Vector(a.x + b.x, a.y + b.y, a.z + b.z);
     }
 
-    static subtract(a: mVector, b: mVector): Vector {
+    static subtract(a: mVector, b: VectorOperand): Vector {
         if (typeof b === "number") return new Vector(a.x - b, a.y - b, a.z - b);
         return new Vector(a.x - b.x, a.y - b.y, a.z - b.z);
     }
 
-    static modulus(a: mVector, b: mVector): Vector {
+    static modulus(a: mVector, b: VectorOperand): Vector {
         if (typeof b === "number") return new Vector(a.x % b, a.y % b, a.z % b);
         return new Vector(a.x % b.x, a.y % b.y, a.z % b.z);
     }
@@ -149,7 +153,7 @@ export class Vector {
         return new Vector(callback(a.x), callback(a.y), callback(a.z));
     }
 
-    static rotate(location: Vector, { y: ya, p, r }: rotation, pivot: Vector = new Vector(0, 0, 0)) {
+    static rotate(location: mVector, { y: ya, p, r }: rotation, pivot: Vector = new Vector(0, 0, 0)) {
         const cos = Math.cos;
         const sin = Math.sin;
 
