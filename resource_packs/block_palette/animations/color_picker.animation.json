@@ -4,7 +4,7 @@
         "animation.color_picker.sl": {
             "loop": true,
             "bones": {
-                "saturation_lightness": {
+                "saturationAndLightness": {
                     "position": [
                         "query.property('qbp:lightness')",
                         "query.property('qbp:saturation')",
@@ -16,7 +16,7 @@
         "animation.color_picker.hue": {
             "loop": true,
             "bones": {
-                "hue_slider": {
+                "hueSlider": {
                     "position": [0, "query.property('qbp:hue')", 0]
                 }
             }

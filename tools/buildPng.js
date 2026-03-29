@@ -1,9 +1,9 @@
 const fs = require("fs");
 const { PNG } = require("pngjs");
 
-const width = 190;
-const height = 240;
-const min = 240;
+const width = 50;
+const height = 64;
+const min = 64;
 
 const png = new PNG({ width: min, height: min });
 
@@ -42,7 +42,7 @@ for (let y = 0; y < height; y++) {
             continue;
         }
 
-        const [red, green, blue, alpha] = bilinear(tr, tl, br, bl, x, y, png.width, png.height);
+        const [red, green, blue, alpha] = bilinear(tr, tl, br, bl, x, y, width, height);
 
         let idx = (png.width * y + x) << 2;
         png.data[idx] = red; // Red
@@ -52,6 +52,4 @@ for (let y = 0; y < height; y++) {
     }
 }
 
-png.pack().pipe(
-    fs.createWriteStream("../resource_packs/block_palette/textures/generated/hsl_box.png")
-);
+png.pack().pipe(fs.createWriteStream("../generated/hue_block_overlay.png"));

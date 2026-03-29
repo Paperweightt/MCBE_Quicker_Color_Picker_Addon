@@ -10,8 +10,10 @@
             },
             "textures": {
                 "default": "textures/entity/hue",
+                // "default": "textures/entity/hsl_box",
                 "hue": "textures/blocks/concrete_white",
-                "sl": "textures/entity/hsl_box"
+                // "hue": "textures/entity/hsl_box",
+                "sl": "textures/entity/hue"
             },
             "geometry": {
                 "default": "geometry.qbp.color_picker",
