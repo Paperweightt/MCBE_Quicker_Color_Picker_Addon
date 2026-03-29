@@ -3,15 +3,9 @@
 /build
 /lib
 /out
-/generated
 
 # Dependencies
 /node_modules
 
 # Generated files
-*.js
-*.js.map
-*.d.ts
-
-
-
+generated/
