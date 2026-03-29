@@ -11,7 +11,7 @@
             "textures": {
                 "default": "textures/entity/hue",
                 "hue": "textures/blocks/concrete_white",
-                "sl": "textures/blocks/concrete_gray"
+                "sl": "textures/entity/hsl_box"
             },
             "geometry": {
                 "default": "geometry.qbp.color_picker",
@@ -20,7 +20,7 @@
             },
             "render_controllers": [
                 "controller.render.color_picker",
-                // "controller.render.color_picker.sl",
+                "controller.render.color_picker.sl",
                 "controller.render.color_picker.hue"
             ],
             "animations": {

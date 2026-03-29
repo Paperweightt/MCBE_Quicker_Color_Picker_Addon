@@ -1,7 +1,11 @@
 const fs = require("fs");
 const { PNG } = require("pngjs");
 
-const png = new PNG({ width: 190, height: 240 });
+const width = 190;
+const height = 240;
+const min = 240;
+
+const png = new PNG({ width: min, height: min });
 
 const tl = [255, 255, 255, 255];
 const tr = [255, 255, 255, 0];
@@ -27,8 +31,17 @@ function bilinear(tr, tl, br, bl, x, y, xSize, ySize) {
     return interpolateColor(top, bottom, y, ySize);
 }
 
-for (let y = 0; y < png.height; y++) {
-    for (let x = 0; x < png.width; x++) {
+for (let y = 0; y < height; y++) {
+    for (let x = 0; x < width; x++) {
+        if (x > png.width) {
+            let idx = (png.width * y + x) << 2;
+            png.data[idx] = 1;
+            png.data[idx + 1] = 1;
+            png.data[idx + 2] = 1;
+            png.data[idx + 3] = 1;
+            continue;
+        }
+
         const [red, green, blue, alpha] = bilinear(tr, tl, br, bl, x, y, png.width, png.height);
 
         let idx = (png.width * y + x) << 2;
