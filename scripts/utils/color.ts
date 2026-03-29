@@ -43,7 +43,12 @@ class Blocks {
         return -1;
     }
 
-    static cubePalette(minLocation: Vector, maxLocation: Vector, dimension: Dimension, inputs: locationColor[]): void {
+    static cubePalette(
+        minLocation: Vector,
+        maxLocation: Vector,
+        dimension: Dimension,
+        inputs: locationColor[]
+    ): void {
         const iterator = new BlockVolume(minLocation, maxLocation).getBlockLocationIterator();
 
         for (const location of iterator) {
@@ -110,7 +115,10 @@ class Blocks {
         let output = "bedrock";
 
         for (const { name, lab } of blockData) {
-            const distance = (lab[0] - inputLab.l) ** 2 + (lab[1] - inputLab.a) ** 2 + (lab[2] - inputLab.b) ** 2;
+            const distance =
+                (lab[0] - inputLab.l) ** 2 +
+                (lab[1] - inputLab.a) ** 2 +
+                (lab[2] - inputLab.b) ** 2;
 
             if (distance < lowestDistance) {
                 output = name;
@@ -127,7 +135,7 @@ export class Color {
     static playerHSL(player: Player, saturation: number, lightness: number): RGB {
         const hue = Color.hashPlayerName(player) * 360;
 
-        return this.hslToRGB(hue, saturation, lightness);
+        return this.hslToRgb(hue, saturation, lightness);
     }
 
     static playerOklab(player: Player, chroma: number, lightness: number): RGB {
@@ -136,7 +144,7 @@ export class Color {
         return this.oklchToRgb(lightness, chroma, angle);
     }
 
-    static hslToRGB(h: number, s: number, l: number): RGB {
+    static hslToRgb(h: number, s: number, l: number): RGB {
         h = h / 360;
         s = s / 100;
         l = l / 100;
@@ -218,4 +226,32 @@ export class Color {
 
         return { red: clamp(r, 0, 1), green: clamp(g, 0, 1), blue: clamp(b2, 0, 1) };
     }
+
+    // static hslToRgb(h: number, s: number, l: number): RGB {
+    //     s /= 100;
+    //     l /= 100;
+    //
+    //     let r, g, b;
+    //
+    //     if (s === 0) {
+    //         r = g = b = l; // Achromatic (gray)
+    //     } else {
+    //         const hue2rgb = (p: number, q: number, t: number) => {
+    //             if (t < 0) t += 1;
+    //             if (t > 1) t -= 1;
+    //             if (t < 1 / 6) return p + (q - p) * 6 * t;
+    //             if (t < 1 / 2) return q;
+    //             if (t < 2 / 3) return p + (q - p) * (2 / 3 - t) * 6;
+    //             return p;
+    //         };
+    //
+    //         const q = l < 0.5 ? l * (1 + s) : l + s - l * s;
+    //         const p = 2 * l - q;
+    //         r = hue2rgb(p, q, h / 360 + 1 / 3);
+    //         g = hue2rgb(p, q, h / 360);
+    //         b = hue2rgb(p, q, h / 360 - 1 / 3);
+    //     }
+    //
+    //     return { red: r, green: g, blue: b };
+    // }
 }

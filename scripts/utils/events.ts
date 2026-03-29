@@ -28,16 +28,19 @@ export class MinPriorityEvent<T> {
         this.listeners.push({ priority, callback });
     }
 
-    unsubscribe(callback: (data: T) => number) {
+    unsubscribe(callback: (data: T) => number): void {
         this.listeners = this.listeners.filter((l) => l.callback !== callback);
     }
 
-    emit(data: T) {
+    emit(data: T): void {
         let best = null;
         let bestPriority = Infinity;
 
         for (const listener of this.listeners) {
-            const p = typeof listener.priority === "function" ? listener.priority(data) : listener.priority;
+            const p =
+                typeof listener.priority === "function"
+                    ? listener.priority(data)
+                    : listener.priority;
 
             if (p < bestPriority) {
                 bestPriority = p;

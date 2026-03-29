@@ -79,7 +79,9 @@ export class Vector {
 
     static removeDuplicates(a: mVector[]) {
         const b: Record<string, boolean> = {};
-        return a.filter(({ x, y, z }) => (b[`${x} ${y} ${z}`] ? false : (b[`${x} ${y} ${z}`] = true)));
+        return a.filter(({ x, y, z }) =>
+            b[`${x} ${y} ${z}`] ? false : (b[`${x} ${y} ${z}`] = true)
+        );
     }
 
     static normalize(a: mVector) {
@@ -171,7 +173,11 @@ export class Vector {
         return new Vector(callback(a.x), callback(a.y), callback(a.z));
     }
 
-    static rotate(location: mVector, { y: ya, p, r }: rotation, pivot: Vector = new Vector(0, 0, 0)) {
+    static rotate(
+        location: mVector,
+        { y: ya, p, r }: rotation,
+        pivot: Vector = new Vector(0, 0, 0)
+    ) {
         const cos = Math.cos;
         const sin = Math.sin;
 

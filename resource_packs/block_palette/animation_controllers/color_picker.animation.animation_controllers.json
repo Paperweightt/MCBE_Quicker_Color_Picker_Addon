@@ -1,0 +1,13 @@
+{
+    "format_version": "1.26.0",
+    "animation_controllers": {
+        "controller.animation.color_picker": {
+            "initial_state": "default",
+            "states": {
+                "default": {
+                    "animations": ["move_hue", "move_sl", "rotate"]
+                }
+            }
+        }
+    }
+}

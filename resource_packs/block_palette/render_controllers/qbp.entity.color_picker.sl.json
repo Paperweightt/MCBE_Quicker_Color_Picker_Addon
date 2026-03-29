@@ -1,0 +1,14 @@
+{
+    "format_version": "1.8.0",
+    "render_controllers": {
+        "controller.render.color_picker.sl": {
+            "geometry": "Geometry.sl",
+            "textures": ["Texture.sl"],
+            "materials": [
+                {
+                    "*": "Material.sl"
+                }
+            ]
+        }
+    }
+}

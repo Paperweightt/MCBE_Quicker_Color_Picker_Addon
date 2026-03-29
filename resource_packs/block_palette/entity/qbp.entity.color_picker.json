@@ -1,0 +1,37 @@
+{
+    "format_version": "1.10.0",
+    "minecraft:client_entity": {
+        "description": {
+            "identifier": "qbp:color_picker",
+            "materials": {
+                "default": "entity_alphatest",
+                "hue": "entity_emissive_alpha_one_sided",
+                "sl": "entity_custom"
+            },
+            "textures": {
+                "default": "textures/entity/hue",
+                "hue": "textures/blocks/concrete_white",
+                "sl": "textures/blocks/concrete_gray"
+            },
+            "geometry": {
+                "default": "geometry.qbp.color_picker",
+                "hue": "geometry.qbp.color_picker.hue",
+                "sl": "geometry.qbp.color_picker.sl"
+            },
+            "render_controllers": [
+                "controller.render.color_picker",
+                // "controller.render.color_picker.sl",
+                "controller.render.color_picker.hue"
+            ],
+            "animations": {
+                "move_sl": "animation.color_picker.sl",
+                "move_hue": "animation.color_picker.hue",
+                "rotate": "animation.rotate",
+                "controller": "controller.animation.color_picker"
+            },
+            "scripts": {
+                "animate": ["controller"]
+            }
+        }
+    }
+}

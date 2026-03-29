@@ -62,7 +62,7 @@ Events.releaseUse.subscribe((data) => {
 
     Color.blocks.cubePalette(
         new Vector(minLocation),
-        new Vector(maxLocation).subtract(1),
+        new Vector(maxLocation),
         selection.dimension,
         inputs
     );
@@ -86,7 +86,7 @@ class SelectionCreator {
         return this.list[ownerId];
     }
 
-    static add(id: string, instance: SelectionCreator) {
+    static add(id: string, instance: SelectionCreator): void {
         this.list[id] = instance;
     }
 
@@ -94,11 +94,11 @@ class SelectionCreator {
         return Object.values(this.list);
     }
 
-    static remove(id: string) {
+    static remove(id: string): void {
         this.get(id)?.remove();
     }
 
-    static runInterval() {
+    static runInterval(): void {
         system.runInterval(() => {
             for (const instance of this.getAll()) {
                 instance.display();
@@ -147,7 +147,7 @@ class SelectionCreator {
         SelectionCreator.add(this.id, this);
     }
 
-    display() {
+    display(): void {
         const { minLocation, maxLocation } = this.getStartEnd();
         const size = Vector.subtract(maxLocation, minLocation);
 
@@ -192,7 +192,7 @@ class SelectionCreator {
         }
     }
 
-    remove() {
+    remove(): void {
         delete SelectionCreator.list[this.id];
     }
 

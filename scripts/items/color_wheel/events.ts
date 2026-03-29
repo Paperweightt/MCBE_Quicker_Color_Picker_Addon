@@ -1,4 +1,4 @@
-import { world, system, Player, EntityInventoryComponent } from "@minecraft/server";
+import { world, system, Player } from "@minecraft/server";
 import { items } from "../../constants.js";
 import { MinPriorityEvent, Event } from "../../utils/events.js";
 import { Vector } from "../../utils/vector.js";
@@ -19,6 +19,7 @@ world.afterEvents.itemUse.subscribe((data) => {
     source.onRelease = "click";
 
     const e = 0.02;
+
     let ticks = 0;
     const dragId = system.runInterval(() => {
         if (!source.isValid) {
@@ -89,7 +90,11 @@ world.afterEvents.itemReleaseUse.subscribe((data) => {
 
 world.afterEvents.playerHotbarSelectedSlotChange.subscribe((data) => {
     const { player, previousSlotSelected } = data;
-    const container = (player.getComponent("inventory") as EntityInventoryComponent).container;
+    const inventory = player.getComponent("inventory");
+
+    if (!inventory) return;
+
+    const container = inventory.container;
     const item = container.getItem(previousSlotSelected);
 
     if (item?.typeId !== colorWheel.typeId) return;

@@ -1,0 +1,20 @@
+{
+    "format_version": "1.8.0",
+    "render_controllers": {
+        "controller.render.color_picker.hue": {
+            "geometry": "Geometry.hue",
+            "textures": ["Texture.hue"],
+            "materials": [
+                {
+                    "*": "Material.hue"
+                }
+            ],
+            "overlay_color": {
+                "r": "query.property('qbp:rcolor')",
+                "g": "query.property('qbp:gcolor')",
+                "b": "query.property('qbp:bcolor')",
+                "a": 1
+            }
+        }
+    }
+}

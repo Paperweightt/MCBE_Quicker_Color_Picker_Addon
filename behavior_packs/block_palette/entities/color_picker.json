@@ -1,0 +1,74 @@
+{
+    "format_version": "1.26.0",
+    "minecraft:entity": {
+        "description": {
+            "identifier": "qbp:color_picker",
+            "is_spawnable": false,
+            "is_summonable": true,
+            "is_experimental": false,
+            "properties": {
+                "qbp:hue": {
+                    "type": "float",
+                    "client_sync": true,
+                    "default": 0.0,
+                    "range": [0.0, 16.0]
+                },
+                "qbp:saturation": {
+                    "type": "float",
+                    "client_sync": true,
+                    "default": 0.0,
+                    "range": [0.0, 20.0]
+                },
+                "qbp:lightness": {
+                    "type": "float",
+                    "client_sync": true,
+                    "default": 0.0,
+                    "range": [0.0, 20.0]
+                },
+                "qbp:rotatey": {
+                    "type": "float",
+                    "client_sync": true,
+                    "default": 0.0,
+                    "range": [0.0, 360.0]
+                },
+                "qbp:rcolor": {
+                    "type": "float",
+                    "client_sync": true,
+                    "default": 0.0,
+                    "range": [0.0, 1.0]
+                },
+                "qbp:gcolor": {
+                    "type": "float",
+                    "client_sync": true,
+                    "default": 0.0,
+                    "range": [0.0, 1.0]
+                },
+                "qbp:bcolor": {
+                    "type": "float",
+                    "client_sync": true,
+                    "default": 0.0,
+                    "range": [0.0, 1.0]
+                }
+            }
+        },
+        "components": {
+            "minecraft:dimension_bound": {},
+            "minecraft:damage_sensor": {
+                "triggers": [
+                    {
+                        "cause": "all",
+                        "deals_damage": "no"
+                    }
+                ]
+            },
+            "minecraft:physics": {
+                "has_collision": false,
+                "has_gravity": false
+            },
+            "minecraft:collision_box": {
+                "width": 0.001,
+                "height": 0.001
+            }
+        }
+    }
+}

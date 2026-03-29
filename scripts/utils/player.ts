@@ -15,12 +15,14 @@ export class PlayerId {
         });
     }
 
-    static save() {
+    static save(): void {
         world.setDynamicProperty(this.propertyIdentifier, JSON.stringify(this.idToName));
     }
 
-    static innit() {
-        this.idToName = JSON.parse((world.getDynamicProperty(this.propertyIdentifier) as string | undefined) || "{}");
+    static innit(): void {
+        this.idToName = JSON.parse(
+            (world.getDynamicProperty(this.propertyIdentifier) as string | undefined) || "{}"
+        );
     }
 }
 

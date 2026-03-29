@@ -4,11 +4,11 @@ export class DeathOnReload {
     static deathNumber = -1;
 
     /** @param {import("@minecraft/server").Entity} entity */
-    static addEntity(entity: Entity) {
+    static addEntity(entity: Entity): void {
         entity.setDynamicProperty("deathOnReload", this.deathNumber * -1);
     }
 
-    static innit() {
+    static innit(): void {
         this.deathNumber *= -1;
         world.setDynamicProperty("deathNumber", this.deathNumber);
 
@@ -16,7 +16,11 @@ export class DeathOnReload {
         const nether = world.getDimension("nether");
         const theEnd = world.getDimension("the_end");
 
-        const entities = [...overworld.getEntities(), ...nether.getEntities(), ...theEnd.getEntities()];
+        const entities = [
+            ...overworld.getEntities(),
+            ...nether.getEntities(),
+            ...theEnd.getEntities(),
+        ];
 
         for (const entity of entities) {
             if (entity.getDynamicProperty("deathOnReload") === this.deathNumber) {
