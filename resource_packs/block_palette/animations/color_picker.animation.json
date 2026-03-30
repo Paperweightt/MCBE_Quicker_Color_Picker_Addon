@@ -5,11 +5,7 @@
             "loop": true,
             "bones": {
                 "saturationAndLightness": {
-                    "position": [
-                        "query.property('qbp:lightness')",
-                        "query.property('qbp:saturation')",
-                        0
-                    ]
+                    "position": ["query.property('qbp:blockx')", "query.property('qbp:blocky')", 0]
                 }
             }
         },

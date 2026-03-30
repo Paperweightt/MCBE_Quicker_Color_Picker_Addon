@@ -227,31 +227,35 @@ export class Color {
         return { red: clamp(r, 0, 1), green: clamp(g, 0, 1), blue: clamp(b2, 0, 1) };
     }
 
-    // static hslToRgb(h: number, s: number, l: number): RGB {
-    //     s /= 100;
-    //     l /= 100;
-    //
-    //     let r, g, b;
-    //
-    //     if (s === 0) {
-    //         r = g = b = l; // Achromatic (gray)
-    //     } else {
-    //         const hue2rgb = (p: number, q: number, t: number) => {
-    //             if (t < 0) t += 1;
-    //             if (t > 1) t -= 1;
-    //             if (t < 1 / 6) return p + (q - p) * 6 * t;
-    //             if (t < 1 / 2) return q;
-    //             if (t < 2 / 3) return p + (q - p) * (2 / 3 - t) * 6;
-    //             return p;
-    //         };
-    //
-    //         const q = l < 0.5 ? l * (1 + s) : l + s - l * s;
-    //         const p = 2 * l - q;
-    //         r = hue2rgb(p, q, h / 360 + 1 / 3);
-    //         g = hue2rgb(p, q, h / 360);
-    //         b = hue2rgb(p, q, h / 360 - 1 / 3);
-    //     }
-    //
-    //     return { red: r, green: g, blue: b };
-    // }
+    // type RGB = { r: number; g: number; b: number };
+    // type OKLab = { L: number; a: number; b: number };
+
+    static srgbToLinear(c: number): number {
+        c /= 255;
+        return c <= 0.04045 ? c / 12.92 : Math.pow((c + 0.055) / 1.055, 2.4);
+    }
+
+    static rgbToOklab(red: number, green: number, blue: number): lab {
+        // 1. Convert sRGB → linear RGB
+        const lr = this.srgbToLinear(red);
+        const lg = this.srgbToLinear(green);
+        const lb = this.srgbToLinear(blue);
+
+        // 2. Linear RGB → LMS
+        const l = 0.4122214708 * lr + 0.5363325363 * lg + 0.0514459929 * lb;
+        const m = 0.2119034982 * lr + 0.6806995451 * lg + 0.1073969566 * lb;
+        const s = 0.0883024619 * lr + 0.2817188376 * lg + 0.6299787005 * lb;
+
+        // 3. Nonlinear transform
+        const l_ = Math.cbrt(l);
+        const m_ = Math.cbrt(m);
+        const s_ = Math.cbrt(s);
+
+        // 4. LMS → OKLab
+        return {
+            l: 0.2104542553 * l_ + 0.793617785 * m_ - 0.0040720468 * s_,
+            a: 1.9779984951 * l_ - 2.428592205 * m_ + 0.4505937099 * s_,
+            b: 0.0259040371 * l_ + 0.7827717662 * m_ - 0.808675766 * s_,
+        };
+    }
 }

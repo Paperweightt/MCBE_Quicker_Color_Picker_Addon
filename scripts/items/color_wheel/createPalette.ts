@@ -41,7 +41,9 @@ Events.releaseUse.subscribe((data) => {
 
     if (!selection) return;
 
-    const { minLocation, maxLocation } = selection.getStartEnd();
+    let { minLocation, maxLocation } = selection.getStartEnd();
+
+    maxLocation = Vector.subtract(maxLocation, 1);
 
     const locations = new BlockVolume(minLocation, maxLocation).getBlockLocationIterator();
     const inputs: locationColor[] = [];

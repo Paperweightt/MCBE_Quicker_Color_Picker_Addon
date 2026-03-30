@@ -13,17 +13,17 @@
                     "default": 0.0,
                     "range": [0.0, 16.0]
                 },
-                "qbp:saturation": {
+                "qbp:blocky": {
                     "type": "float",
                     "client_sync": true,
                     "default": 0.0,
-                    "range": [0.0, 20.0]
+                    "range": [0.0, 23.0]
                 },
-                "qbp:lightness": {
+                "qbp:blockx": {
                     "type": "float",
                     "client_sync": true,
                     "default": 0.0,
-                    "range": [0.0, 20.0]
+                    "range": [0.0, 19.0]
                 },
                 "qbp:rotatey": {
                     "type": "float",

@@ -1,4 +1,13 @@
-import { Dimension, Entity, Player, system, Vector2, Vector3, world } from "@minecraft/server";
+import {
+    Block,
+    Dimension,
+    Entity,
+    Player,
+    system,
+    Vector2,
+    Vector3,
+    world,
+} from "@minecraft/server";
 import { PlayerUtils } from "../../utils/player.js";
 import { Vector } from "../../utils/vector.js";
 import { Events } from "./events.js";
@@ -38,8 +47,6 @@ Events.startUse.subscribe({
         for (const colorPicker of ColorPicker.getAll()) {
             const pointer = colorPicker.getPointer(player);
 
-            console.log(JSON.stringify(pointer));
-
             if (!pointer) continue;
             if (pointer.x < -16 || pointer.x > 13) continue;
             if (pointer.y < -1 || pointer.y > 29) continue;
@@ -68,10 +75,10 @@ Events.startUse.subscribe({
 
         if (!picker || !pointer) return;
 
-        const y = picker.hueMarker.location;
-
-        if (y - 5 < pointer.y - 3 && pointer.y - 3 < y + 5) {
+        if (picker.pointerIsHoveringHueMarker(pointer)) {
             picker.hueMarker.owner = player;
+        } else if (picker.pointerIsHoveringBoxMarker(pointer)) {
+            picker.satLightMarker.owner = player;
         }
     },
 });
@@ -94,7 +101,6 @@ Events.click.subscribe({
             const pointer = colorPicker.getPointer(player);
 
             if (!pointer) continue;
-            console.log(JSON.stringify(pointer));
 
             if (pointer.x < -16 || pointer.x > 13) continue;
             if (pointer.y < -1 || pointer.y > 29) continue;
@@ -159,20 +165,13 @@ class ColorPicker {
         });
     }
 
-    static rotatePitch(v: Vector | Vector3, pitch: number): Vector {
-        const cos = Math.cos(pitch);
-        const sin = Math.sin(pitch);
-
-        return new Vector(v.x, v.y * cos - v.z * sin, v.y * sin + v.z * cos);
-    }
-
     hueMarker: { location: number; owner: Player | undefined } = {
-        location: 0,
+        location: 3,
         owner: undefined,
     };
 
     satLightMarker: { location: Vector2; owner: Player | undefined } = {
-        location: { x: 0, y: 0 },
+        location: { x: -6.8, y: 3.1 },
         owner: undefined,
     };
 
@@ -182,6 +181,7 @@ class ColorPicker {
     owner: Player;
     id: string;
     rotation: number;
+    block: Block;
 
     constructor(owner: Player, location: Vector, dimension: Dimension, rotation: number) {
         this.location = location;
@@ -189,6 +189,7 @@ class ColorPicker {
         this.owner = owner;
         this.id = owner.id;
         this.rotation = rotation;
+        this.block = this.dimension.getBlock(new Vector(0, -1, 0).add(location))!;
 
         const { min, max } = this.dimension.heightRange;
         const spawnOffset = new Vector(0.5, 0, 0.5);
@@ -217,6 +218,28 @@ class ColorPicker {
         ColorPicker.add(this);
     }
 
+    pointerIsHoveringHueMarker(pointer: { x: number; y: number }): boolean {
+        const y = this.hueMarker.location;
+
+        if (pointer.y > y + 5) return false;
+        if (pointer.y < y - 5) return false;
+        if (pointer.x > -10) return false;
+        if (pointer.x < -15) return false;
+
+        return true;
+    }
+
+    pointerIsHoveringBoxMarker(pointer: { x: number; y: number }): boolean {
+        const { x, y } = this.satLightMarker.location;
+
+        if (pointer.y > y + 5) return false;
+        if (pointer.y < y - 5) return false;
+        if (pointer.x > x + 5) return false;
+        if (pointer.x < x - 5) return false;
+
+        return true;
+    }
+
     setRotation(yRotation: number): void {
         this.entity.setProperty("qbp:rotatey", yRotation);
     }
@@ -227,33 +250,57 @@ class ColorPicker {
 
             if (!pointer) return;
 
-            pointer.y -= 3;
-            pointer.y = Math.max(pointer.y, 0);
-            pointer.y = Math.min(pointer.y, 16);
+            pointer.y = Math.max(pointer.y, 3);
+            pointer.y = Math.min(pointer.y, 19);
 
-            this.setHue(pointer.y * 22.5);
-            this.entity.setProperty("qbp:hue", pointer.y);
             this.hueMarker.location = pointer.y;
+            this.entity.setProperty("qbp:hue", pointer.y - 3);
+            this.setDisplayBlock();
+            this.updateBlock();
         } else if (this.satLightMarker.owner) {
             const pointer = this.getPointer(this.satLightMarker.owner);
 
             if (!pointer) return;
 
-            pointer.y -= 3;
-            pointer.y = Math.max(pointer.y, 0);
-            pointer.y = Math.min(pointer.y, 16);
+            pointer.y = Math.max(pointer.y, 0 + 3.1);
+            pointer.y = Math.min(pointer.y, 22.9 + 3.1);
+            pointer.x = Math.max(pointer.x, 0 - 6.8);
+            pointer.x = Math.min(pointer.x, 17.8 - 6.8);
 
-            this.entity.setProperty("qbp:saturation", pointer.y);
-            this.entity.setProperty("qbp:lightness", pointer.x);
+            this.entity.setProperty("qbp:blocky", pointer.y - 3.1);
+            this.entity.setProperty("qbp:blockx", pointer.x + 6.8);
 
-            this.satLightMarker.location = {
-                x: pointer.x,
-                y: pointer.y,
-            };
+            this.satLightMarker.location = { x: pointer.x, y: pointer.y };
+            this.updateBlock();
         }
     }
 
-    setHue(hue: number): void {
+    updateBlock(): void {
+        const hue = this.getHue();
+        const { s, l } = this.getSatLightness();
+
+        const { red, green, blue } = Color.hslToRgb(hue, s, l);
+        const lab = Color.rgbToOklab(red * 255, green * 255, blue * 255);
+        const type = Color.blocks.getClosestBlockType(lab);
+
+        this.block.setType(type);
+    }
+
+    getHue(): number {
+        return (this.hueMarker.location - 3) * 22.5;
+    }
+
+    getSatLightness(): { s: number; l: number } {
+        let y = (this.satLightMarker.location.y - 3.1) / 22.9;
+        let x = (this.satLightMarker.location.x + 6.8) / 17.8;
+
+        return {
+            s: x * y * 100,
+            l: y * (100 - 50 * x),
+        };
+    }
+
+    setDisplayBlock(hue: number = this.getHue()): void {
         const rgb = Color.hslToRgb(hue, 100, 50);
 
         this.entity.setProperty("qbp:rcolor", rgb.red);
@@ -265,8 +312,9 @@ class ColorPicker {
         if (this.hueMarker.owner === owner) {
             this.hueMarker.owner = undefined;
             return true;
-        } else if (this.satLightMarker.owner === owner) {
-            this.hueMarker.owner = undefined;
+        }
+        if (this.satLightMarker.owner === owner) {
+            this.satLightMarker.owner = undefined;
             return true;
         }
         return false;
