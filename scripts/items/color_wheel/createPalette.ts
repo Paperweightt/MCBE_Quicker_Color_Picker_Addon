@@ -7,8 +7,8 @@ import {
     Player,
     system,
     Vector3,
-    RGB,
     RGBA,
+    Vector2,
 } from "@minecraft/server";
 import { config, particles } from "../../constants";
 import { Vector } from "../../utils/vector.js";
@@ -84,16 +84,12 @@ Events.releaseUse.subscribe((data) => {
                 Particle.boxFaces(particles.block, faultyInput, size, selection.dimension, red);
                 await system.waitTicks(2);
                 Particle.boxFaces(particles.block, faultyInput, size, selection.dimension, red);
-                await system.waitTicks(2);
-                Particle.boxFaces(particles.block, faultyInput, size, selection.dimension, red);
-                await system.waitTicks(2);
-                Particle.boxFaces(particles.block, faultyInput, size, selection.dimension, red);
                 faultyInputs;
             });
         }
 
         player.sendMessage(
-            "Transparent blocks, non full blocks, as well as several multi-face blocks are not compatible"
+            "Transparent blocks, non full blocks, as well as several multi-face blocks are non-compatible"
         );
 
         selection.remove();
@@ -114,14 +110,15 @@ Events.releaseUse.subscribe((data) => {
 class SelectionCreator {
     static list: Record<string, SelectionCreator> = {};
 
-    static faceToAxisRotation = {
-        Up: { axis: "y", rotation: { x: 0, y: 90 } },
-        Down: { axis: "y", rotation: { x: 0, y: 90 } },
-        East: { axis: "x", rotation: { x: 0, y: 0 } },
-        West: { axis: "x", rotation: { x: 0, y: 0 } },
-        South: { axis: "z", rotation: { x: 270, y: 0 } },
-        North: { axis: "z", rotation: { x: 270, y: 0 } },
-    };
+    static faceToAxisRotation: Record<Direction, { axis: keyof Vector3 | "z"; rotation: Vector2 }> =
+        {
+            Up: { axis: "y", rotation: { x: 0, y: 90 } },
+            Down: { axis: "y", rotation: { x: 0, y: 90 } },
+            East: { axis: "x", rotation: { x: 0, y: 0 } },
+            West: { axis: "x", rotation: { x: 0, y: 0 } },
+            South: { axis: "z", rotation: { x: 270, y: 0 } },
+            North: { axis: "z", rotation: { x: 270, y: 0 } },
+        };
 
     static get(ownerId: string): SelectionCreator | undefined {
         return this.list[ownerId];
@@ -170,11 +167,7 @@ class SelectionCreator {
         this._minLocation = block.location;
         this._maxLocation = block.location;
 
-        const { axis, rotation } = SelectionCreator.faceToAxisRotation[face] as {
-            axis: "x" | "y" | "z";
-            rotation: { x: number; y: number };
-        };
-
+        const { axis, rotation } = SelectionCreator.faceToAxisRotation[face];
         this.editLocation = location;
 
         if (face === "Up" || face === "East" || face === "South") {
@@ -191,11 +184,6 @@ class SelectionCreator {
     display(): void {
         const { minLocation, maxLocation } = this.getStartEnd();
         const size = Vector.subtract(maxLocation, minLocation);
-
-        // if (system.currentTick % 4 === 0) {
-        //     Particle.boxFaces(particles.block, minLocation, size, this.dimension);
-        // }
-        // console.log(JSON.stringify(minLocation), size.getString());
 
         Particle.boxEdges(particles.line, minLocation, size, this.dimension, 0.1);
 

@@ -1,19 +1,10 @@
-import {
-    Block,
-    Dimension,
-    Entity,
-    Player,
-    system,
-    Vector2,
-    Vector3,
-    world,
-} from "@minecraft/server";
+import { Block, Dimension, Entity, Player, system, Vector2 } from "@minecraft/server";
 import { PlayerUtils } from "../../utils/player.js";
 import { Vector } from "../../utils/vector.js";
 import { Events } from "./events.js";
 import { entities } from "../../constants.js";
 import { DeathOnReload } from "../../utils/deathOnReload.js";
-import { Color } from "../../utils/color.js";
+import { Color, hsl } from "../../utils/color.js";
 
 // select block to edit
 Events.click.subscribe({
@@ -190,9 +181,48 @@ class ColorPicker {
         this.id = owner.id;
         this.rotation = rotation;
         this.block = this.dimension.getBlock(new Vector(0, -1, 0).add(location))!;
+        this.entity = this.spawnDisplay();
 
+        this.setRotation(rotation);
+        this.setInitialHsl();
+
+        ColorPicker.add(this);
+    }
+
+    getBlockHsl(): hsl | undefined {
+        const lab = Color.blocks.getLab(this.block.typeId);
+
+        if (lab === -1) return;
+
+        return Color.oklabToHsl(lab.l, lab.a, lab.b);
+    }
+
+    setInitialHsl() {
+        const hsl = this.getBlockHsl();
+
+        if (!hsl) return;
+
+        this.setDisplayBlock(hsl.h);
+
+        this.entity.setProperty("qbp:hue", hsl.h / 22.5);
+        this.hueMarker.location = hsl.h / 22.5 + 3;
+
+        const x = (hsl.s / (hsl.l + 0.5 * hsl.s)) * 17.8;
+        const y = ((hsl.l + 0.5 * hsl.s) / 100) * 22.9;
+
+        this.entity.setProperty("qbp:blocky", y);
+        this.entity.setProperty("qbp:blockx", x);
+
+        this.satLightMarker.location = {
+            x: x - 6.8,
+            y: y + 3.1,
+        };
+    }
+
+    spawnDisplay(): Entity {
         const { min, max } = this.dimension.heightRange;
         const spawnOffset = new Vector(0.5, 0, 0.5);
+        let entity;
 
         if (this.location.y < min || this.location.y > max) {
             const spawnLocation = this.location.copy();
@@ -200,22 +230,23 @@ class ColorPicker {
             spawnLocation.y = Math.min(this.location.y, max);
             spawnLocation.y = Math.max(this.location.y, min);
 
-            this.entity = this.dimension.spawnEntity(
+            entity = this.dimension.spawnEntity(
                 entities.colorWheel,
                 spawnOffset.add(spawnLocation)
             );
-            this.entity.teleport(this.location);
+            entity.teleport(this.location);
         } else {
-            this.entity = this.dimension.spawnEntity(
+            entity = this.dimension.spawnEntity(
                 entities.colorWheel,
                 spawnOffset.add(this.location)
             );
         }
 
-        this.setRotation(rotation);
+        DeathOnReload.addEntity(entity);
 
-        DeathOnReload.addEntity(this.entity);
-        ColorPicker.add(this);
+        this.entity = entity;
+
+        return entity;
     }
 
     pointerIsHoveringHueMarker(pointer: { x: number; y: number }): boolean {
@@ -278,7 +309,6 @@ class ColorPicker {
     updateBlock(): void {
         const hue = this.getHue();
         const { s, l } = this.getSatLightness();
-
         const { red, green, blue } = Color.hslToRgb(hue, s, l);
         const lab = Color.rgbToOklab(red * 255, green * 255, blue * 255);
         const type = Color.blocks.getClosestBlockType(lab);

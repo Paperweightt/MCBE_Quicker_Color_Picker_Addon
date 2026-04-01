@@ -3,6 +3,7 @@ import { blockData } from "../generated/blockColors.js";
 import { Vector } from "./vector.js";
 
 export type lab = { l: number; a: number; b: number };
+export type hsl = { h: number; s: number; l: number };
 export type locationColor = { location: Vector; color: lab };
 
 class Blocks {
@@ -27,7 +28,7 @@ class Blocks {
     static getLab(typeId: string): lab | -1 {
         typeId = this.typeIdtoName(typeId);
 
-        console.log(typeId);
+        // console.log(typeId);
 
         let low = 0;
         let high = blockData.length - 1;
@@ -166,6 +167,46 @@ export class Color {
         return { red, green, blue };
     }
 
+    static oklabToHsl(l: number, a: number, b: number): hsl {
+        const { red, green, blue } = this.oklabToRgb(l, a, b);
+        return this.rgbToHsl(red, green, blue);
+    }
+
+    static rgbToHsl(r: number, g: number, b: number): hsl {
+        const max = Math.max(r, g, b);
+        const min = Math.min(r, g, b);
+        const delta = max - min;
+
+        let h = 0;
+        let s = 0;
+        const l = (max + min) / 2;
+
+        if (delta !== 0) {
+            s = delta / (1 - Math.abs(2 * l - 1));
+
+            switch (max) {
+                case r:
+                    h = ((g - b) / delta) % 6;
+                    break;
+                case g:
+                    h = (b - r) / delta + 2;
+                    break;
+                case b:
+                    h = (r - g) / delta + 4;
+                    break;
+            }
+
+            h *= 60;
+            if (h < 0) h += 360;
+        }
+
+        return {
+            h,
+            s: s * 100,
+            l: l * 100,
+        };
+    }
+
     static hashPlayerName(player: Player): number {
         const str = player.name;
         let seed = 0;
@@ -216,13 +257,9 @@ export class Color {
         let b2 = -0.0041960863 * l - 0.7034186147 * m + 1.707614701 * s;
 
         // 4) Linear RGB → sRGB
-        r = linearToSrgb(r);
-        g = linearToSrgb(g);
-        b2 = linearToSrgb(b2);
-
-        function linearToSrgb(c: number): number {
-            return c <= 0.0031308 ? 12.92 * c : 1.055 * Math.pow(c, 1 / 2.4) - 0.055;
-        }
+        r = this.linearToSrgb(r);
+        g = this.linearToSrgb(g);
+        b2 = this.linearToSrgb(b2);
 
         function clamp(x: number, min: number, max: number): number {
             return Math.min(Math.max(x, min), max);
@@ -231,12 +268,39 @@ export class Color {
         return { red: clamp(r, 0, 1), green: clamp(g, 0, 1), blue: clamp(b2, 0, 1) };
     }
 
-    // type RGB = { r: number; g: number; b: number };
-    // type OKLab = { L: number; a: number; b: number };
+    static linearToSrgb(c: number): number {
+        return c <= 0.0031308 ? 12.92 * c : 1.055 * Math.pow(c, 1 / 2.4) - 0.055;
+    }
 
     static srgbToLinear(c: number): number {
         c /= 255;
         return c <= 0.04045 ? c / 12.92 : Math.pow((c + 0.055) / 1.055, 2.4);
+    }
+
+    static oklabToLinearRGB(L: number, a: number, b: number): RGB {
+        const l_ = L + 0.3963377774 * a + 0.2158037573 * b;
+        const m_ = L - 0.1055613458 * a - 0.0638541728 * b;
+        const s_ = L - 0.0894841775 * a - 1.291485548 * b;
+
+        const l = l_ * l_ * l_;
+        const m = m_ * m_ * m_;
+        const s = s_ * s_ * s_;
+
+        return {
+            red: +4.0767416621 * l - 3.3077115913 * m + 0.2309699292 * s,
+            green: -1.2684380046 * l + 2.6097574011 * m - 0.3413193965 * s,
+            blue: -0.0041960863 * l - 0.7034186147 * m + 1.707614701 * s,
+        };
+    }
+
+    static oklabToRGB(L: number, a: number, b: number): RGB {
+        const lin = this.oklabToLinearRGB(L, a, b);
+
+        const r = Math.min(1, Math.max(0, this.linearToSrgb(lin.red)));
+        const g = Math.min(1, Math.max(0, this.linearToSrgb(lin.green)));
+        const b_ = Math.min(1, Math.max(0, this.linearToSrgb(lin.blue)));
+
+        return { red: r, green: g, blue: b_ };
     }
 
     static rgbToOklab(red: number, green: number, blue: number): lab {
