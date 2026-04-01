@@ -6,24 +6,28 @@ export type lab = { l: number; a: number; b: number };
 export type locationColor = { location: Vector; color: lab };
 
 class Blocks {
-    static getLab(typeId: string): lab | -1 {
+    static typeIdMap: Record<string, string> = {
+        smooth_stone_slab: "smooth_stone_double_slab",
+        crimson_hyphae: "crimson_stem",
+        warped_hyphae: "warped_stem",
+        jungle_wood: "jungle_log",
+    };
+
+    static typeIdtoName(typeId: string): string {
         if (typeId.startsWith("minecraft:")) typeId = typeId.substring(10);
+
+        if (this.typeIdMap[typeId]) return this.typeIdMap[typeId];
 
         if (typeId.startsWith("waxed")) typeId = typeId.substring(6);
         else if (typeId.startsWith("cracked")) typeId = typeId.substring(8);
 
-        if (typeId.endsWith("stairs")) {
-            typeId = typeId.slice(0, -7);
-        } else if (typeId.endsWith("wall")) {
-            typeId = typeId.slice(0, -5);
-        } else if (typeId.endsWith("slab")) {
-            //misses wood slabs
-            typeId = typeId.slice(0, -5);
-        } else {
-            if (typeId.endsWith("gate")) typeId = typeId.slice(0, -6);
-            // misses brick fence
-            if (typeId.endsWith("fence")) typeId = typeId.slice(0, -5) + "planks";
-        }
+        return typeId;
+    }
+
+    static getLab(typeId: string): lab | -1 {
+        typeId = this.typeIdtoName(typeId);
+
+        console.log(typeId);
 
         let low = 0;
         let high = blockData.length - 1;

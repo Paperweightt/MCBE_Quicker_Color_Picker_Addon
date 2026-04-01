@@ -13,6 +13,28 @@ const nameChanges = {
     red_nether_bricks: "red_nether_brick",
     rooted_dirt: "dirt_with_roots",
     terracotta: "light_gray_terracotta",
+    smooth_stone_slab: "smooth_stone_double_slab",
+
+    chiseled_bookshelf_empty: "",
+    chiseled_bookshelf_occupied: "",
+    copper_bulb_lit: "",
+    crafter_north: "",
+    crafter_south: "",
+    crafter_top_crafting: "",
+    dispenser_front: "",
+    exposed_copper_bulb_lit: "",
+    farmland_moist: "",
+    furnace_front: "",
+    jack_o_lantern: "",
+    light_gray_glazed_terracotta: "",
+    loom_front: "",
+    note_block: "",
+    oxidized_copper_bulb_lit: "",
+    piston_top_sticky: "",
+    redstone_lamp_on: "",
+    respawn_anchor_top_off: "",
+    smithing_table_front: "",
+    weathered_copper_bulb_lit: "",
 };
 
 async function getBlockData() {
@@ -28,7 +50,7 @@ async function getBuildFriendlyPngs() {
     try {
         const data = await readFile("../generated/_palettes.json", "utf8");
         const lists = JSON.parse(data);
-        const textures = lists[1].textures;
+        const textures = lists[0].textures;
         const newTextures = [];
 
         for (const texture of textures) {
@@ -76,7 +98,10 @@ for (const value of data) {
     parsedData.push(value);
 }
 
-writeFile("../scripts/generated/blockColors.ts", "export const blockData = " + JSON.stringify(parsedData, null, "\t"));
+writeFile(
+    "../scripts/generated/blockColors.ts",
+    "export const blockData = " + JSON.stringify(parsedData, null, "\t")
+);
 
 console.log(parsedData.length, "blocks");
 

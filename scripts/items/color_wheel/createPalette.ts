@@ -7,6 +7,8 @@ import {
     Player,
     system,
     Vector3,
+    RGB,
+    RGBA,
 } from "@minecraft/server";
 import { config, particles } from "../../constants";
 import { Vector } from "../../utils/vector.js";
@@ -47,6 +49,7 @@ Events.releaseUse.subscribe((data) => {
 
     const locations = new BlockVolume(minLocation, maxLocation).getBlockLocationIterator();
     const inputs: locationColor[] = [];
+    const faultyInputs: Vector3[] = [];
 
     for (const location of locations) {
         const block = selection.dimension.getBlock(location);
@@ -55,11 +58,47 @@ Events.releaseUse.subscribe((data) => {
 
         const color = Color.blocks.getLab(block.typeId);
 
-        if (color === -1) continue;
+        if (color === -1) {
+            faultyInputs.push(location);
+            continue;
+        }
 
         const { x, y, z } = location;
 
         inputs.push({ location: new Vector(x, y, z), color });
+    }
+
+    const red: RGBA = {
+        red: 1,
+        blue: 0.5,
+        green: 0.5,
+        alpha: 1,
+    };
+
+    if (faultyInputs.length) {
+        const size = new Vector(1);
+        for (const faultyInput of faultyInputs) {
+            system.run(async () => {
+                Particle.boxFaces(particles.block, faultyInput, size, selection.dimension, red);
+                await system.waitTicks(2);
+                Particle.boxFaces(particles.block, faultyInput, size, selection.dimension, red);
+                await system.waitTicks(2);
+                Particle.boxFaces(particles.block, faultyInput, size, selection.dimension, red);
+                await system.waitTicks(2);
+                Particle.boxFaces(particles.block, faultyInput, size, selection.dimension, red);
+                await system.waitTicks(2);
+                Particle.boxFaces(particles.block, faultyInput, size, selection.dimension, red);
+                faultyInputs;
+            });
+        }
+
+        player.sendMessage(
+            "Transparent blocks, non full blocks, as well as several multi-face blocks are not compatible"
+        );
+
+        selection.remove();
+
+        return;
     }
 
     Color.blocks.cubePalette(
