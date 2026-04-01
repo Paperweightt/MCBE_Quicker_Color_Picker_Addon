@@ -9,9 +9,28 @@ export type locationColor = { location: Vector; color: lab };
 class Blocks {
     static typeIdMap: Record<string, string> = {
         smooth_stone_slab: "smooth_stone_double_slab",
+
         crimson_hyphae: "crimson_stem",
         warped_hyphae: "warped_stem",
-        jungle_wood: "jungle_log",
+
+        acacia_log: "acacia_wood",
+        birch_log: "birch_wood",
+        cherry_log: "cherry_wood",
+        dark_oak_log: "dark_oak_wood",
+        jungle_log: "jungle_wood",
+        mangrove_log: "mangrove_wood",
+        oak_log: "oak_wood",
+        pale_oak_log: "pale_oak_wood",
+        spruce_log: "spruce_wood",
+        stripped_acacia_log: "stripped_acacia_wood",
+        stripped_birch_log: "stripped_birch_wood",
+        stripped_cherry_log: "stripped_cherry_wood",
+        stripped_dark_oak_log: "stripped_dark_oak_wood",
+        stripped_jungle_log: "stripped_jungle_wood",
+        stripped_mangrove_log: "stripped_mangrove_wood",
+        stripped_oak_log: "stripped_oak_wood",
+        stripped_pale_oak_log: "stripped_pale_oak_wood",
+        stripped_spruce_log: "stripped_spruce_wood",
     };
 
     static typeIdtoName(typeId: string): string {
@@ -22,13 +41,15 @@ class Blocks {
         if (typeId.startsWith("waxed")) typeId = typeId.substring(6);
         else if (typeId.startsWith("cracked")) typeId = typeId.substring(8);
 
+        console.log(typeId);
+
         return typeId;
     }
 
     static getLab(typeId: string): lab | -1 {
         typeId = this.typeIdtoName(typeId);
 
-        // console.log(typeId);
+        console.log(typeId);
 
         let low = 0;
         let high = blockData.length - 1;
@@ -56,12 +77,13 @@ class Blocks {
     ): void {
         const iterator = new BlockVolume(minLocation, maxLocation).getBlockLocationIterator();
 
-        for (const location of iterator) {
+        outerloop: for (const location of iterator) {
             let totalWeight = 0;
             let color = { l: 0, a: 0, b: 0 };
 
             for (const input of inputs) {
                 const dist = Vector.distance(location, input.location);
+                if (dist === 0) continue outerloop;
                 // let weight = 1 / Math.pow(dist, 1)
                 // let weight = 1 / (dist + 0.0001)
                 let weight = 1 / dist ** 2;

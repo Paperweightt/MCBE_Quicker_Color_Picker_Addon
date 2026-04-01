@@ -75,14 +75,18 @@ const parsedData = [];
 
 for (const value of data) {
     if (!pngs.includes(value.texture)) continue;
+    value.name = value.name.toLowerCase().replaceAll(" ", "_");
 
-    if (value.name.endsWith("Side")) {
+    if (value.name.endsWith("_side")) {
         value.name = value.name.slice(0, -5);
-    } else if (value.name.endsWith("Side2")) {
+    } else if (value.name.endsWith("_side2")) {
         value.name = value.name.slice(0, -6);
     }
 
-    value.name = value.name.toLowerCase().replaceAll(" ", "_");
+    if (value.name.endsWith("log")) {
+        value.name = value.name.slice(0, -3) + "wood";
+        console.log(`${value.name.slice(0, -4) + "log"}: "${value.name}",`);
+    }
 
     if (typeof nameChanges[value.name] === "string") {
         if (nameChanges[value.name] === "") continue;
@@ -98,9 +102,11 @@ for (const value of data) {
     parsedData.push(value);
 }
 
+const sorted = parsedData.sort((a, b) => a.name.localeCompare(b.name));
+
 writeFile(
     "../scripts/generated/blockColors.ts",
-    "export const blockData = " + JSON.stringify(parsedData, null, "\t")
+    "export const blockData = " + JSON.stringify(sorted, null, "\t")
 );
 
 console.log(parsedData.length, "blocks");
@@ -129,6 +135,7 @@ async function getDefaultPngs() {
 }
 
 const defaults = await getDefaultPngs();
+
 const diff = [];
 
 for (const png of defaults) {
