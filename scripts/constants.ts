@@ -21,5 +21,5 @@ export const particles = {
 };
 
 export const config = {
-    MAX_SELECTION_DISTANCE: 50,
+    MAX_SELECTION_DISTANCE: 30,
 };
