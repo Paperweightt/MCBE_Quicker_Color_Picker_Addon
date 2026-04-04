@@ -49,8 +49,6 @@ class Blocks {
     static getLab(typeId: string): lab | -1 {
         typeId = this.typeIdtoName(typeId);
 
-        console.log(typeId);
-
         let low = 0;
         let high = blockData.length - 1;
         let mid;
