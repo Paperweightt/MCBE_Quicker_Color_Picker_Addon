@@ -210,8 +210,13 @@ class ColorPicker {
         this.entity.setProperty("qbp:hue", hsl.h / 22.5);
         this.hueMarker.location = hsl.h / 22.5 + 3;
 
-        const x = (hsl.s / (hsl.l + 0.5 * hsl.s)) * 17.8;
-        const y = ((hsl.l + 0.5 * hsl.s) / 100) * 22.9;
+        let x = (hsl.s / (hsl.l + 0.5 * hsl.s)) * 17.8;
+        let y = ((hsl.l + 0.5 * hsl.s) / 100) * 22.9;
+
+        y = Math.max(y, 0);
+        y = Math.min(y, 22.9);
+        x = Math.max(x, 0);
+        x = Math.min(x, 17.8);
 
         this.entity.setProperty("qbp:blocky", y);
         this.entity.setProperty("qbp:blockx", x);
