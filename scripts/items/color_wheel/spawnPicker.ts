@@ -33,38 +33,22 @@ Events.click.subscribe({
 Events.startUse.subscribe({
     priority: (data) => {
         const { player } = data;
-        let picker: ColorPicker | undefined;
+        const picker = ColorPicker.getInteractable(player);
 
-        for (const colorPicker of ColorPicker.getAll()) {
-            const pointer = colorPicker.getPointer(player);
+        if (!picker) return Infinity;
 
-            if (!pointer) continue;
-            if (pointer.x < -16 || pointer.x > 13) continue;
-            if (pointer.y < -1 || pointer.y > 29) continue;
-
-            picker = colorPicker;
-        }
-
-        if (picker) {
-            return Vector.distance(player.location, picker.location);
-        } else {
-            return Infinity;
-        }
+        return picker.distance;
     },
     callback: (data) => {
         const { player } = data;
+        const raycastData = ColorPicker.getInteractable(player);
 
-        let picker: ColorPicker | undefined;
-        let pointer: { x: number; y: number } | undefined;
+        if (!raycastData) return;
 
-        for (const colorPicker of ColorPicker.getAll()) {
-            const p = colorPicker.getPointer(player);
+        const picker = raycastData.picker;
+        const pointer = picker.getPointer(player);
 
-            picker = colorPicker;
-            pointer = p;
-        }
-
-        if (!picker || !pointer) return;
+        if (!pointer) return;
 
         if (picker.pointerIsHoveringHueMarker(pointer)) {
             picker.hueMarker.owner = player;
@@ -86,42 +70,31 @@ Events.releaseUse.subscribe((data) => {
 Events.click.subscribe({
     priority: (data) => {
         const { player } = data;
-        let picker: ColorPicker | undefined;
+        const picker = ColorPicker.getInteractable(player);
 
-        for (const colorPicker of ColorPicker.getAll()) {
-            const pointer = colorPicker.getPointer(player);
+        if (!picker) return Infinity;
 
-            if (!pointer) continue;
-
-            if (pointer.x < -16 || pointer.x > 13) continue;
-            if (pointer.y < -1 || pointer.y > 29) continue;
-
-            picker = colorPicker;
-        }
-
-        if (picker) {
-            return Vector.distance(player.location, picker.location) - 10;
-        } else {
-            return Infinity;
-        }
+        return picker.distance;
     },
     callback: (data) => {
         const { player } = data;
-        const pickers: ColorPicker[] = [];
+        const raycastData = ColorPicker.getInteractable(player);
 
-        for (const colorPicker of ColorPicker.getAll()) {
-            const pointer = colorPicker.getPointer(player);
+        if (!raycastData) return;
 
-            if (!pointer) continue;
+        const picker = raycastData.picker;
+        const pointer = picker.getPointer(player);
 
-            if (pointer.x < -16 || pointer.x > -10) continue;
-            if (pointer.y < 23 || pointer.y > 29) continue;
+        if (!pointer) return;
 
-            pickers.push(colorPicker);
-        }
-
-        for (const picker of pickers) {
+        if (picker.pointerIsHoveringClose(pointer)) {
             picker.remove();
+        } else if (picker.pointerIsHoveringHueBar(pointer)) {
+            picker.setHueMarker(pointer.y);
+            picker.updateBlock();
+        } else if (picker.pointerIsHoveringBox(pointer)) {
+            picker.setSatLightMarker(pointer);
+            picker.updateBlock();
         }
     },
 });
@@ -140,6 +113,36 @@ class ColorPicker {
 
     static getAll(): ColorPicker[] {
         return Object.values(this.list);
+    }
+
+    static getInteractable(player: Player): { picker: ColorPicker; distance: number } | undefined {
+        let outputPicker: ColorPicker | undefined;
+        let outputDistance: number = Infinity;
+
+        for (const picker of this.getAll()) {
+            const pointer = picker.getPointer(player);
+
+            if (!pointer) continue;
+            if (pointer.x < -16 || pointer.x > 13) continue;
+            if (pointer.y < -1 || pointer.y > 29) continue;
+
+            const distance =
+                (picker.location.x - player.location.x) ** 2 +
+                (picker.location.y - player.location.y) ** 2 +
+                (picker.location.z - player.location.z) ** 2;
+
+            if (distance < outputDistance) {
+                outputDistance = distance;
+                outputPicker = picker;
+            }
+        }
+
+        if (!outputPicker) return undefined;
+
+        return {
+            picker: outputPicker,
+            distance: Math.sqrt(outputDistance),
+        };
     }
 
     static remove(id: string): void {
@@ -249,7 +252,23 @@ class ColorPicker {
         return entity;
     }
 
-    pointerIsHoveringHueMarker(pointer: { x: number; y: number }): boolean {
+    pointerIsHoveringClose(pointer: Vector2): boolean {
+        if (pointer.x < -16 || pointer.x > -10) return false;
+        if (pointer.y < 23 || pointer.y > 29) return false;
+
+        return true;
+    }
+
+    pointerIsHoveringBox(pointer: Vector2): boolean {
+        if (pointer.y > 26) return false;
+        if (pointer.y < 3) return false;
+        if (pointer.x > 11) return false;
+        if (pointer.x < -7) return false;
+
+        return true;
+    }
+
+    pointerIsHoveringHueMarker(pointer: Vector2): boolean {
         const y = this.hueMarker.location;
 
         if (pointer.y > y + 5) return false;
@@ -260,7 +279,16 @@ class ColorPicker {
         return true;
     }
 
-    pointerIsHoveringBoxMarker(pointer: { x: number; y: number }): boolean {
+    pointerIsHoveringHueBar(pointer: Vector2) {
+        if (pointer.y > 20) return false;
+        if (pointer.y < 2) return false;
+        if (pointer.x > -10) return false;
+        if (pointer.x < -15) return false;
+
+        return true;
+    }
+
+    pointerIsHoveringBoxMarker(pointer: Vector2): boolean {
         const { x, y } = this.satLightMarker.location;
 
         if (pointer.y > y + 5) return false;
@@ -281,14 +309,10 @@ class ColorPicker {
 
             if (!pointer) return;
 
-            pointer.y = Math.max(pointer.y, 3);
-            pointer.y = Math.min(pointer.y, 19);
+            this.setHueMarker(pointer.y);
+        }
 
-            this.hueMarker.location = pointer.y;
-            this.entity.setProperty("qbp:hue", pointer.y - 3);
-            this.setDisplayBlock();
-            this.updateBlock();
-        } else if (this.satLightMarker.owner) {
+        if (this.satLightMarker.owner) {
             const pointer = this.getPointer(this.satLightMarker.owner);
 
             if (!pointer) return;
@@ -302,8 +326,30 @@ class ColorPicker {
             this.entity.setProperty("qbp:blockx", pointer.x + 6.8);
 
             this.satLightMarker.location = { x: pointer.x, y: pointer.y };
-            this.updateBlock();
         }
+
+        if (this.satLightMarker.owner || this.hueMarker.owner) this.updateBlock();
+    }
+
+    setSatLightMarker({ x, y }: Vector2) {
+        y = Math.max(y, 0 + 3.1);
+        y = Math.min(y, 22.9 + 3.1);
+        x = Math.max(x, 0 - 6.8);
+        x = Math.min(x, 17.8 - 6.8);
+
+        this.entity.setProperty("qbp:blocky", y - 3.1);
+        this.entity.setProperty("qbp:blockx", x + 6.8);
+
+        this.satLightMarker.location = { x, y };
+    }
+
+    setHueMarker(y: number) {
+        y = Math.max(y, 3);
+        y = Math.min(y, 19);
+
+        this.hueMarker.location = y;
+        this.entity.setProperty("qbp:hue", y - 3);
+        this.setDisplayBlock();
     }
 
     updateBlock(): void {
