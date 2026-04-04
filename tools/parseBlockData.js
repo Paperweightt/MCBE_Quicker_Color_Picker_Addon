@@ -15,6 +15,7 @@ const nameChanges = {
     terracotta: "light_gray_terracotta",
     smooth_stone_slab: "smooth_stone_double_slab",
 
+    daylight_detector: "",
     chiseled_bookshelf_empty: "",
     chiseled_bookshelf_occupied: "",
     copper_bulb_lit: "",
