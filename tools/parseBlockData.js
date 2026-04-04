@@ -94,6 +94,8 @@ for (const value of data) {
         value.name = nameChanges[value.name];
     }
 
+    if (value.name.endsWith("trapdoor")) continue;
+
     delete value.rgb;
     delete value.texture;
     delete value.sides;
