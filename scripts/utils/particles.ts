@@ -43,17 +43,14 @@ export class Particle {
         dimension: Dimension,
         lifetime: number = 0.11,
         width: number = 0.05,
-        rgba: RGBA = this.defaultRGBA,
-        rotation = { y: 0, p: 0, r: 0 },
-        pivot = new Vector(0, 0, 0)
+        rgba: RGBA = this.defaultRGBA
     ): void {
         const line = (start: Vector, offset: Vector): void => {
             start.add(location);
             offset.add(start);
-            // try {
-            // this.line(particle, start, offset, dimension, lifetime, width, rgba, rotation, pivot);
-            this.line(particle, start, offset, dimension, lifetime, width, rgba);
-            // } catch (error) {}
+            try {
+                this.line(particle, start, offset, dimension, lifetime, width, rgba);
+            } catch (error) {}
         };
 
         line(new Vector(0, 0, 0), new Vector(0, size.y, 0));
