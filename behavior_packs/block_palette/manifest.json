@@ -3,7 +3,7 @@
     "header": {
         "name": "Quicker Block Picker",
         "description": "Create block palettes faster than ever!",
-        "version": [1, 1, 0],
+        "version": [1, 2, 0],
         "uuid": "0fbcabb8-0149-493b-a735-c36fa9aa990f",
         "min_engine_version": [1, 20, 30]
     },
@@ -24,7 +24,7 @@
         },
         {
             "uuid": "28d16fb0-3def-4c48-87ec-1bba48460cb6",
-            "version": [1, 1, 0]
+            "version": [1, 2, 0]
         }
     ]
 }
