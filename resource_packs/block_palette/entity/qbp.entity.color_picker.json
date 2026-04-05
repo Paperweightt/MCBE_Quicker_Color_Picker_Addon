@@ -10,9 +10,7 @@
             },
             "textures": {
                 "default": "textures/entity/hue",
-                // "default": "textures/entity/hsl_box",
-                "hue": "textures/blocks/concrete_white",
-                // "hue": "textures/entity/hsl_box",
+                "hue": "textures/entity/hue",
                 "sl": "textures/entity/hue"
             },
             "geometry": {

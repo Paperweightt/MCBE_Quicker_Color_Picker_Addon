@@ -337,7 +337,7 @@
 							"origin": [-7.4, 2.6, -1],
 							"size": [2, 0.4, 2],
 							"uv": {
-								"north": {"uv": [58, 2], "uv_size": [2, 1]},
+								"north": {"uv": [51, 2], "uv_size": [2, 1]},
 								"east": {"uv": [52, 2], "uv_size": [2, 1]},
 								"south": {"uv": [52, 2], "uv_size": [2, 1]},
 								"west": {"uv": [52, 2], "uv_size": [2, 1]},
@@ -379,7 +379,7 @@
 							"uv": {
 								"north": {"uv": [55, 4], "uv_size": [1, 0]},
 								"east": {"uv": [51, 0], "uv_size": [2, 2]},
-								"south": {"uv": [60, 0], "uv_size": [1, 1]},
+								"south": {"uv": [52, 1], "uv_size": [1, 1]},
 								"west": {"uv": [51, 0], "uv_size": [2, 2]},
 								"up": {"uv": [51, 2], "uv_size": [2, -2]},
 								"down": {"uv": [51, 2], "uv_size": [2, -2]}
